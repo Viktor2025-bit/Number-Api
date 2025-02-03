@@ -31,7 +31,7 @@ A Node.js API that classifies numbers based on mathematical properties and provi
 
 3. Start the server:
    ```sh
-   npm run dev
+   npm run start 
    ```
 
 4. Test the API locally:
