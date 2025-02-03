@@ -46,7 +46,7 @@ app.get('/api/classify-number', async (req, res) => {
     const { number } = req.query;
 
     if (!number || isNaN(number)) {
-        return res.status(400).json({ number, error: true });
+        return res.status(400).json({ number, alphabet, error: true });
     }
 
     const num = parseInt(number);
@@ -55,7 +55,7 @@ app.get('/api/classify-number', async (req, res) => {
     properties.push(num % 2 === 0 ? "even" : "odd");
 
     try {
-        const factResponse = await axios.get(`http://numbersapi.com/${num}/math`);
+        const factResponse = await axios.get(`${process.env.NUMBERS_API}/${num}/math`);
         const funFact = factResponse.data;
 
         res.json({
