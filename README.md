@@ -43,18 +43,20 @@ A Node.js API that classifies numbers based on mathematical properties and provi
 ### 🔹 GET /api/classify-number
 #### Request Example
 ```
-GET /api/classify-number?number=371
+GET /api/classify-number?number=700
 ```
 
 #### Successful Response (200 OK)
 ```json
 {
-    "number": 371,
-    "is_prime": false,
-    "is_perfect": false,
-    "properties": ["armstrong", "odd"],
-    "digit_sum": 11,
-    "fun_fact": "371 is an Armstrong number because 3^3 + 7^3 + 1^3 = 371"
+   "number": 700,
+"is_prime": false,
+"is_perfect": false,
+"properties": [
+"even"
+],
+"digit_sum": 7,
+"fun_fact": "700 is the number of symmetric 8-cubes."
 }
 ```
 
