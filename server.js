@@ -1,4 +1,3 @@
-// Import required modules
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -10,6 +9,14 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
+
+const redis = require('redis');
+const redisClient = redis.createClient({ url: 'redis://localhost:6379' });
+
+redisClient.connect();
+
+
+
 
 // Utility functions
 const isPrime = (num) => {
@@ -41,12 +48,15 @@ const digitSum = (num) => {
     return num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
 };
 
-// API Route
+
+
+
+// Inside your API route, check the cache first
 app.get('/api/classify-number', async (req, res) => {
     const { number } = req.query;
 
     if (!number || isNaN(number)) {
-        return res.status(400).json({ number, alphabet, error: true });
+        return res.status(400).json({ number, error: true });
     }
 
     const num = parseInt(number);
@@ -55,8 +65,24 @@ app.get('/api/classify-number', async (req, res) => {
     properties.push(num % 2 === 0 ? "even" : "odd");
 
     try {
+        // Check Redis cache for fun fact
+        const cachedFact = await redisClient.get(num.toString());
+        if (cachedFact) {
+            return res.json({
+                number: num,
+                is_prime: isPrime(num),
+                is_perfect: isPerfect(num),
+                properties,
+                digit_sum: digitSum(num),
+                fun_fact: JSON.parse(cachedFact),
+            });
+        }
+
         const factResponse = await axios.get(`${process.env.NUMBERS_API}/${num}/math`);
         const funFact = factResponse.data;
+
+        // Cache the fun fact
+        await redisClient.set(num.toString(), JSON.stringify(funFact), 'EX', 3600);  // 1-hour expiry
 
         res.json({
             number: num,
@@ -67,11 +93,12 @@ app.get('/api/classify-number', async (req, res) => {
             fun_fact: funFact,
         });
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch fun fact" });
+        res.status(500).json({ error: "Failed to fetch fun fact"});
+        console.error(error.message);
     }
 });
 
-// Start Server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
