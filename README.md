@@ -38,9 +38,6 @@ A Node.js API that classifies numbers based on mathematical properties and provi
    ```
    http://localhost:3000/api/classify-number?number=323
    ```
-5. install Redis for caching of data
-   "npm install redis"
-   "download Redis and ensure it is running"
 
 ## 📡 API Endpoints
 ### 🔹 GET /api/classify-number
